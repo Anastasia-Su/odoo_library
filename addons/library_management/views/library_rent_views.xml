@@ -19,7 +19,19 @@
         <field name="name">library.rent.form</field>
         <field name="model">library.rent</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Оренда книги">
+                <!-- Header with action button -->
+                <header>
+                    <!-- "Повернути книгу" button – visible only if not yet returned -->
+                    <button name="action_return_book"
+                            string="Повернути книгу"
+                            type="object"
+                            class="oe_highlight btn-primary"
+                            invisible="return_date"/>  <!-- hides if return_date is set -->
+
+                    <!-- Optional: status indicator (smart button style, but simple) -->
+                    <field name="return_date" widget="boolean_toggle" invisible="1"/> <!-- hidden helper if needed -->
+                </header>
                 <sheet>
                     <group>
                         <field name="book_id"/>

@@ -9,8 +9,22 @@ class LibraryRentWizard(models.TransientModel):
     book_id = fields.Many2one('library.book', string="Book", required=True)
 
     def action_rent_book(self):
+        self.ensure_one()
+        # Create rent record (rent_date defaults to today)
         self.env['library.rent'].create({
             'partner_id': self.partner_id.id,
-            'book_id': self.book_id.id
+            'book_id': self.book_id.id,
         })
-        self.book_id.is_available = False
+        # No need to set is_available=False anymore — compute will handle it!
+
+        # Optional: success message + close wizard
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Успіх',
+                'message': f'Книгу "{self.book_id.name}" видано {self.partner_id.name}!',
+                'type': 'success',
+                'sticky': False,
+            }
+        }

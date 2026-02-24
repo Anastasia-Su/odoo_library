@@ -2,6 +2,8 @@ services:
   db:
     image: postgres:15
     restart: unless-stopped
+    ports:
+      - "5433:5432" 
     environment:
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: secret
@@ -34,50 +36,3 @@ services:
 volumes:
   db-data:
   odoo-data:
-  
-  
-  
-  # services:
-#   db:
-#     image: postgres:15
-#     # env_file:
-#     #   - .env
-#     environment:
-#       POSTGRES_USER: odoo
-#       POSTGRES_PASSWORD: secret
-#       POSTGRES_DB: library_db
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U odoo"]
-#       interval: 5s
-#       retries: 5
-#       timeout: 5s
-
-#   odoo:
-#     image: odoo:18
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#     ports:
-#       - "8069:8069"
-#     # env_file:
-#     #   - .env
-#     environment:
-#       DB_HOST: db
-#       DB_PORT: 5432
-#       DB_USER: odoo      
-#       DB_PASSWORD: secret  
-#       DB_NAME: library_db
-#     command: >
-#       odoo -d library_db
-#           --db_user=odoo
-#           --db_password=secret
-#           --init=base
-#           --without-demo=all
-#     volumes:
-#       - odoo-data:/var/lib/odoo
-#       - ./addons:/mnt/extra-addons
-# volumes:
-#   db-data:
-#   odoo-data:
