@@ -5,26 +5,39 @@ class LibraryRentWizard(models.TransientModel):
     _name = "library.rent.wizard"
     _description = "Rent Book Wizard"
 
-    partner_id = fields.Many2one('res.partner', string="User", required=True)
-    book_id = fields.Many2one('library.book', string="Book", required=True)
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="User",
+        required=True,
+        domain="[('category_id.name', '=', 'Test Users')]",
+        options={"no_create": True, "no_open": True},
+    )
+    book_id = fields.Many2one(
+        "library.book",
+        string="Book",
+        required=True,
+        domain="[('is_available', '=', True)]",
+    )
 
     def action_rent_book(self):
         self.ensure_one()
         # Create rent record (rent_date defaults to today)
-        self.env['library.rent'].create({
-            'partner_id': self.partner_id.id,
-            'book_id': self.book_id.id,
-        })
+        self.env["library.rent"].create(
+            {
+                "partner_id": self.partner_id.id,
+                "book_id": self.book_id.id,
+            }
+        )
         # No need to set is_available=False anymore — compute will handle it!
 
         # Optional: success message + close wizard
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'Успіх',
-                'message': f'Книгу "{self.book_id.name}" видано {self.partner_id.name}!',
-                'type': 'success',
-                'sticky': False,
-            }
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": "Успіх",
+                "message": f'Книгу "{self.book_id.name}" видано {self.partner_id.name}!',
+                "type": "success",
+                "sticky": False,
+            },
         }

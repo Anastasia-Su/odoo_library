@@ -1,11 +1,29 @@
 <!-- demo/demo.xml -->
 <odoo>
+  <data noupdate="1">
     <!-- Demo partners (users) -->
-    <record id="demo_partner_john" model="res.partner">
-        <field name="name">John Doe</field>
+    <record id="tag_test_users" model="res.partner.category">
+            <field name="name">Test Users</field>
+            <field name="color">8</field>
     </record>
+
     <record id="demo_partner_jane" model="res.partner">
         <field name="name">Jane Smith</field>
+        <field name="email">jane.smith@test.example.com</field>
+        <field name="phone">(123) 456-7890</field>
+        <field name="street">Test Street 1</field>
+        <field name="city">Bila Tserkva</field>
+        <field name="country_id" ref="base.ua"/>  <!-- Україна -->
+        <field name="category_id" eval="[(6, 0, [ref('library_management.tag_test_users')])]"/>  <!-- прив'язка тегу -->
+    </record>
+
+    <record id="demo_partner_john" model="res.partner">
+        <field name="name">John Doe</field>
+        <field name="email">john.doe@test.example.com</field>
+        <field name="phone">(987) 654-3210</field>
+        <field name="city">Kyiv</field>
+        <field name="country_id" ref="base.ua"/>
+        <field name="category_id" eval="[(6, 0, [ref('library_management.tag_test_users')])]"/>
     </record>
 
     <!-- Demo books -->
@@ -47,4 +65,6 @@
         <field name="return_date">2026-02-22</field>
         <!-- Already returned -->
     </record>
+
+  </data>
 </odoo>
