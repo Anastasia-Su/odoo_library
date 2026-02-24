@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_library_rent_wizard_form" model="ir.ui.view">
+        <field name="name">library.rent.wizard.form</field>
+        <field name="model">library.rent.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Видати книгу">
+                <group>
+                    <field name="partner_id"/>
+                    <field name="book_id"/>
+                </group>
+                <footer>
+                    <button string="Видати"
+                            type="object"
+                            name="action_rent_book"
+                            class="btn-primary"/>
+                    <button string="Скасувати"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard action -->
+    <record id="action_rent_wizard" model="ir.actions.act_window">
+        <field name="view_id" ref="view_library_rent_wizard_form"/>
+        <field name="name">Rent Book Wizard</field>
+        <field name="res_model">library.rent.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

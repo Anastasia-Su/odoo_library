@@ -1,0 +1,17 @@
+<odoo>
+    <!-- Root menu -->
+    <menuitem id="menu_library_root"
+              name="Library"/>
+
+    <!-- Books -->
+    <menuitem id="menu_library_books"
+              name="Books"
+              parent="menu_library_root"
+              action="action_library_book"/>
+
+    <!-- Rentals -->
+    <menuitem id="menu_library_rents"
+              name="Rents"
+              parent="menu_library_root"
+              action="action_library_rent"/>
+</odoo>
