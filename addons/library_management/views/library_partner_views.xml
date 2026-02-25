@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <odoo>
+<odoo>
+    <!-- List view -->
     <record id="view_library_partner_list" model="ir.ui.view">
         <field name="name">library.partner.list</field>
         <field name="model">res.partner</field>
         <field name="arch" type="xml">
-            <list string="Користувачі бібліотеки">
+            <list string="Library Users">
                 <field name="name"/>
                 <field name="email"/>
                 <field name="phone"/>
-                <field name="category_id" widget="many2many_tags"/> <!-- показує теги -->
+                <field name="category_id" widget="many2many_tags"/>
             </list>
         </field>
     </record>
 
+    <!-- Form view -->
     <record id="view_library_partner_form" model="ir.ui.view">
         <field name="name">library.partner.form</field>
         <field name="model">res.partner</field>
         <field name="arch" type="xml">
-            <form string="Користувач бібліотеки">
+            <form string="Library Users">
                 <sheet>
                     <group>
                         <field name="name" required="1"/>
@@ -26,6 +28,7 @@
                         <field name="street"/>
                         <field name="city"/>
                         <field name="country_id"/>
+                        <!-- Tags – shows categories like 'Test Users' -->
                         <field name="category_id" widget="many2many_tags"/>
                     </group>
                 </sheet>
@@ -33,17 +36,25 @@
         </field>
     </record>
 
+    <!-- 
+        Window Action to open the list of library users
+        Filters only partners from the 'Test Users' category
+    -->
     <record id="action_library_partner" model="ir.actions.act_window">
-        <field name="name">Користувачі бібліотеки</field>
+        <field name="name">Library Users</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('category_id.name', '=', 'Test Users')]</field> <!-- тільки твої тестові -->
-        <field name="context" eval="{'default_category_id': [(6, 0, [ref('library_management.tag_test_users'), False])]}"/>
+        <!-- Domain: show only partners that have the 'Test Users' category -->
+        <field name="domain">[('category_id.name', '=', 'Test Users')]</field>
+        <!-- 
+            Context: when creating a new user from this menu/action,
+            automatically add the 'Test Users' category
+        -->
+        <field name="context" eval="{'default_category_id': [(6, 0, [ref('library_management.tag_test_users')])]}"/>
     </record>
 
-    <menuitem id="menu_library_partners"
-            name="Users"
-            parent="menu_library_root"
-            action="action_library_partner"
-            sequence="20"/>
+    <!-- 
+        Menu item in the main menu
+    -->
+    <menuitem id="menu_library_partners" name="Users" parent="menu_library_root" action="action_library_partner" sequence="20"/>
 </odoo>

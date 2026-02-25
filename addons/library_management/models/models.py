@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from typing import Any
 
 
 class LibraryBook(models.Model):
@@ -39,9 +40,9 @@ class LibraryBook(models.Model):
         "res.partner",
         string="Current Renter",
         compute="_compute_current_renter",
-        store=False, 
+        store=False,
         readonly=True,
-        help="Partner who currently rents this book (if any)"
+        help="Partner who currently rents this book (if any)",
     )
 
     # Stored computed field, important for fast filtering, searching
@@ -54,45 +55,46 @@ class LibraryBook(models.Model):
     )
 
     # COMPUTE METHODS
-    
+
     @api.depends("rent_ids.return_date")
-    def _compute_is_available(self):
+    def _compute_is_available(self) -> None:
         """
         Book is available when it has no open (not returned) rental records.
         """
-        
+
         for book in self:
             open_rents = book.rent_ids.filtered(lambda r: not r.return_date)
             book.is_available = len(open_rents) == 0
 
     @api.depends("rent_ids.partner_id", "rent_ids.return_date")
-    def _compute_current_renter(self):
+    def _compute_current_renter(self) -> None:
         """
         Finds the partner who currently rents the book.
         If multiple open rents exist (shouldn't happen due to constraint),
         takes the most recent one by rent_date.
         """
-        
+
         for book in self:
             open_rents = book.rent_ids.filtered(lambda r: not r.return_date)
-            
+
             if not open_rents:
                 book.current_renter_id = False
                 continue
-            
-            latest = open_rents.sorted(key=lambda r: r.rent_date or fields.Date.today(), reverse=True)[:1]
+
+            latest = open_rents.sorted(
+                key=lambda r: r.rent_date or fields.Date.today(), reverse=True
+            )[:1]
             book.current_renter_id = latest.partner_id
-         
 
     # CONSTRAINTS
 
     @api.constrains("name", "author_id")
-    def _check_unique_name_author(self):
+    def _check_unique_name_author(self) -> None:
         """
         Ensures that the combination of book title + author is unique.
         Case-insensitive comparison + strip whitespace.
         """
-        
+
         for record in self:
             if not record.name or not record.author_id:
                 continue
@@ -112,7 +114,7 @@ class LibraryBook(models.Model):
                 )
 
     @api.constrains("published_date")
-    def _check_published_date_not_future(self):
+    def _check_published_date_not_future(self) -> None:
         """Published date cannot be in the future."""
         today = fields.Date.today()
         for record in self:
@@ -125,7 +127,7 @@ class LibraryRent(models.Model):
     Rental / borrowing record.
     One record = one borrowing event (can be open or already returned).
     """
-    
+
     _name = "library.rent"
     _description = "Library Rent"
     _order = "rent_date desc"
@@ -148,12 +150,12 @@ class LibraryRent(models.Model):
     rent_date = fields.Date(string="Rent Date", default=fields.Date.today)
     return_date = fields.Date(string="Return Date")
 
-    def action_return_book(self):
+    def action_return_book(self) -> dict[str, Any]:
         """
         Marks the rental as returned (sets return_date = today).
         Prevents double-return and refreshes the form view.
         """
-        
+
         if self.return_date:
             raise ValidationError("This book was already returned.")
 
@@ -172,9 +174,9 @@ class LibraryRent(models.Model):
     # CONSTRAINTS
 
     @api.constrains("book_id", "return_date")
-    def _check_only_one_open_rent_per_book(self):
+    def _check_only_one_open_rent_per_book(self) -> None:
         """Only one active (open) rental is allowed per book at any time."""
-        
+
         for record in self:
             if record.return_date:
                 continue  # Already returned - skip
@@ -195,14 +197,14 @@ class LibraryRent(models.Model):
                 )
 
     @api.constrains("rent_date", "return_date")
-    def _check_rent_dates_validity(self):
+    def _check_rent_dates_validity(self) -> None:
         """
         Date consistency rules:
         - rent_date cannot be future
         - return_date cannot be before rent_date
         - return_date cannot be in future (if set)
         """
-        
+
         today = fields.Date.today()
         for record in self:
             if record.rent_date > today:
@@ -220,25 +222,29 @@ class LibraryAuthor(models.Model):
     Simple model for authors.
     Mainly used to avoid duplicating author names and enable selection from dropdown.
     """
-    
+
     _name = "library.author"
     _description = "Library Author"
     _order = "name"
 
     name = fields.Char(string="Author Name", required=True)
-    
+
     name_normalized = fields.Char(
-        compute='_compute_name_normalized',
+        compute="_compute_name_normalized",
         store=True,
-        index=True,          
+        index=True,
     )
 
     _sql_constraints = [
-        ('name_normalized_unique', 'unique(name_normalized)', 'Author name must be unique (case and space insensitive).'),
+        (
+            "name_normalized_unique",
+            "unique(name_normalized)",
+            "Author name must be unique (case and space insensitive).",
+        ),
     ]
 
-    @api.depends('name')
-    def _compute_name_normalized(self):
+    @api.depends("name")
+    def _compute_name_normalized(self) -> None:
         for record in self:
             if record.name:
                 # Strip spaces + lowercase

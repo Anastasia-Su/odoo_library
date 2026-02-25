@@ -1,5 +1,5 @@
 <odoo>
-    <!-- List view of authors -->
+    <!-- List view -->
     <record id="view_library_author_list" model="ir.ui.view">
         <field name="name">library.author.list</field>
         <field name="model">library.author</field>
@@ -10,7 +10,7 @@
         </field>
     </record>
 
-    <!-- Form view of authors -->
+    <!-- Form view -->
     <record id="view_library_author_form" model="ir.ui.view">
         <field name="name">library.author.form</field>
         <field name="model">library.author</field>
@@ -18,6 +18,7 @@
             <form string="Author">
                 <sheet>
                     <group>
+                        <!-- Author name – required, unique (enforced via SQL constraint on normalized name) -->
                         <field name="name" required="1"/>
                     </group>
                 </sheet>
@@ -25,17 +26,16 @@
         </field>
     </record>
 
-    <!-- Action for authors -->
+    <!-- 
+        Window Action to open the authors list + form
+        This action is linked to the menu item below
+    -->
     <record id="action_library_author" model="ir.actions.act_window">
         <field name="name">Authors</field>
         <field name="res_model">library.author</field>
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Menu item -->
-    <menuitem id="menu_library_authors"
-              name="Authors"
-              parent="menu_library_root"
-              action="action_library_author"
-              sequence="15"/>
+    <!-- Menu entry under the main Library menu -->
+    <menuitem id="menu_library_authors" name="Authors" parent="menu_library_root" action="action_library_author" sequence="15"/>
 </odoo>
