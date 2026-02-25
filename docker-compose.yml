@@ -32,6 +32,10 @@ services:
     volumes:
       - odoo-data:/var/lib/odoo
       - ./addons:/mnt/extra-addons
+    command: >
+      odoo
+      --dev=all
+      --log-level=info
 
 volumes:
   db-data:

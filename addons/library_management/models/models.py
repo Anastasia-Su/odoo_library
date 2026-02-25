@@ -96,5 +96,3 @@ class LibraryRent(models.Model):
                 ]
                 if self.search_count(domain):
                     raise ValidationError("Ця книга вже видана і не повернута.")
-            # if self.search([('book_id', '=', record.book_id.id), ('return_date', '=', False), ('id', '!=', record.id)]):
-            #     raise ValidationError("This book is already rented and not returned.")

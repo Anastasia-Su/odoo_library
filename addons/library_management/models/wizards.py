@@ -43,20 +43,4 @@ class LibraryRentWizard(models.TransientModel):
 
         # Close the popup
         return {'type': 'ir.actions.act_window_close'}
-        # No need to set is_available=False anymore — compute will handle it!
-
-        # Optional: success message + close wizard
-        # return {
-        #     "type": "ir.actions.client",
-        #     "tag": "display_notification",
-        #     "params": {
-        #         "title": "Успіх",
-        #         "message": f'Книгу "{self.book_id.name}" видано {self.partner_id.name}!',
-        #         "type": "success",
-        #         "sticky": False,
-        #     },
-        # }
         
-        # return {
-        #     'type': 'ir.actions.act_window_close',
-        # }

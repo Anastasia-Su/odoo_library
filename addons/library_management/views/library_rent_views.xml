@@ -34,8 +34,9 @@
                 </header>
                 <sheet>
                     <group>
-                        <field name="book_id"/>
-                        <field name="partner_id"/>
+                        <!-- Options are copied from model to prevent creating books in Rents form) -->
+                        <field name="book_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="partner_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="rent_date"/>
                         <field name="return_date"/>
                     </group>
