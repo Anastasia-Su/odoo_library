@@ -1,7 +1,9 @@
 from datetime import timedelta
+from psycopg2.errors import UniqueViolation
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
 from odoo import fields
+
 
 
 class TestLibraryRent(TransactionCase):
@@ -32,11 +34,16 @@ class TestLibraryRent(TransactionCase):
             "name": "Jane Smith",
             "category_id": [(6, 0, [cls.test_category.id])]
         })
+        
+        cls.author_robert = cls.env["library.author"].create({
+            "name": "Robert Martin"
+        })
+        
 
         # Create a test book
         cls.book = cls.env["library.book"].create({
             "name": "Clean Architecture",
-            "author": "Robert Martin",
+            "author_id": cls.author_robert.id,
             "published_date": fields.Date.today(),
         })
         
@@ -49,7 +56,7 @@ class TestLibraryRent(TransactionCase):
         with self.assertRaises(ValidationError):
             self.env["library.book"].create({
                 "name": "Clean Architecture",
-                "author": "Robert Martin",
+                "author_id": self.author_robert.id,
                 "published_date": fields.Date.today(),
             })
             
@@ -63,7 +70,7 @@ class TestLibraryRent(TransactionCase):
         with self.assertRaises(ValidationError):
             self.env["library.book"].create({
                 "name": "Future Book",
-                "author": "Someone",
+                "author_id": self.author_robert.id,
                 "published_date": future_date,
             })
             
@@ -158,3 +165,21 @@ class TestLibraryRent(TransactionCase):
         # Second return should raise ValidationError
         with self.assertRaises(ValidationError):
             rent.action_return_book()
+       
+
+    def test_unique_author_name(self):
+        """Check that creating two authors with the same name raises an error."""
+        
+        self.env['library.author'].create({'name': 'Jane Austen'})
+        with self.assertRaises(UniqueViolation):
+            self.env['library.author'].create({'name': 'Jane Austen'})
+
+    def test_strip_name_uniqueness(self):
+        """Check that names with leading/trailing spaces 
+           or different case are considered duplicates."""
+        
+        self.env['library.author'].create({'name': 'Jane Austen'})
+
+        # This should now fail due to normalized unique
+        with self.assertRaises(UniqueViolation):
+            self.env['library.author'].create({'name': '  jane austen  '})

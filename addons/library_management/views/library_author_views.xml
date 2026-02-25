@@ -1,0 +1,41 @@
+<odoo>
+    <!-- List view of authors -->
+    <record id="view_library_author_list" model="ir.ui.view">
+        <field name="name">library.author.list</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <list string="Authors">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view of authors -->
+    <record id="view_library_author_form" model="ir.ui.view">
+        <field name="name">library.author.form</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <form string="Author">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for authors -->
+    <record id="action_library_author" model="ir.actions.act_window">
+        <field name="name">Authors</field>
+        <field name="res_model">library.author</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu item -->
+    <menuitem id="menu_library_authors"
+              name="Authors"
+              parent="menu_library_root"
+              action="action_library_author"
+              sequence="15"/>
+</odoo>

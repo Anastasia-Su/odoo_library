@@ -16,7 +16,7 @@ class LibraryController(http.Controller):
             {
                 "id": b.id,
                 "name": b.name,
-                "author": b.author,
+                "author_id": b.author_id.name if b.author_id else None,
                 "available": b.is_available,
             }
             for b in books

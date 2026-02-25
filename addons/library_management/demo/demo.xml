@@ -26,24 +26,37 @@
         <field name="category_id" eval="[(6, 0, [ref('library_management.tag_test_users')])]"/>
     </record>
 
+    <!-- Demo authors -->
+    <record id="demo_author_fitzgerald" model="library.author">
+        <field name="name">F. Scott Fitzgerald</field>
+    </record>
+
+    <record id="demo_author_orwell" model="library.author">
+        <field name="name">George Orwell</field>
+    </record>
+
+    <record id="demo_author_tolkien" model="library.author">
+        <field name="name">J.R.R. Tolkien</field>
+    </record>
+
     <!-- Demo books -->
     <record id="demo_book_gatsby" model="library.book">
         <field name="name">The Great Gatsby</field>
-        <field name="author">F. Scott Fitzgerald</field>
+        <field name="author_id" ref="library_management.demo_author_fitzgerald"/>
         <field name="published_date">1925-04-10</field>
         <field name="is_available" eval="True"/>
     </record>
 
     <record id="demo_book_1984" model="library.book">
         <field name="name">1984</field>
-        <field name="author">George Orwell</field>
+        <field name="author_id" ref="library_management.demo_author_orwell"/>
         <field name="published_date">1949-06-08</field>
         <field name="is_available" eval="False"/> <!-- Already rented -->
     </record>
 
     <record id="demo_book_hobbit" model="library.book">
         <field name="name">The Hobbit</field>
-        <field name="author">J.R.R. Tolkien</field>
+        <field name="author_id" ref="library_management.demo_author_tolkien"/>
         <field name="published_date">1937-09-21</field>
         <field name="is_available" eval="True"/>
     </record>
