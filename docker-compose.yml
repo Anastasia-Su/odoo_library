@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:15
     restart: unless-stopped
+    container_name: db
     ports:
       - "5433:5432" 
     environment:
@@ -22,6 +23,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    container_name: odoo
     ports:
       - "8069:8069"
     environment:

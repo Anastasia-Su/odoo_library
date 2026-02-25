@@ -49,8 +49,39 @@ class LibraryBook(models.Model):
                 book.current_renter_id = latest_open.partner_id
             else:
                 book.current_renter_id = False
+                
+                
+    # ==================== CONSTRAINTS - LIBRARY BOOK ====================
 
+    @api.constrains("name", "author")
+    def _check_unique_name_author(self):
+        """Book name + author combination must be unique."""
+        for record in self:
+            if not record.name or not record.author:
+                continue
 
+            duplicate = self.search([
+                ("name", "=ilike", record.name.strip()),
+                ("author", "=ilike", record.author.strip()),
+                ("id", "!=", record.id),
+            ], limit=1)
+
+            if duplicate:
+                raise ValidationError(
+                    f"A book titled '{record.name}' by '{record.author}' already exists."
+                )
+
+    @api.constrains("published_date")
+    def _check_published_date_not_future(self):
+        """Published date cannot be in the future."""
+        today = fields.Date.today()
+        for record in self:
+            if record.published_date and record.published_date > today:
+                raise ValidationError(
+                    "Published date cannot be in the future."
+                )
+                
+    
 class LibraryRent(models.Model):
     _name = "library.rent"
     _description = "Library Rent"
@@ -85,14 +116,40 @@ class LibraryRent(models.Model):
             },
         }
 
+    # ==================== CONSTRAINTS - LIBRARY RENT ====================
+
     @api.constrains("book_id", "return_date")
-    def _check_book_availability(self):
+    def _check_only_one_open_rent_per_book(self):
+        """Only one active (open) rental is allowed per book at any time."""
         for record in self:
-            if not record.return_date:  # only check when creating/open rent
-                domain = [
-                    ("book_id", "=", record.book_id.id),
-                    ("return_date", "=", False),
-                    ("id", "!=", record.id or record._origin.id),
-                ]
-                if self.search_count(domain):
-                    raise ValidationError("Ця книга вже видана і не повернута.")
+            if record.return_date:
+                continue  # already returned → no need to check
+
+            other_open = self.search([
+                ("book_id", "=", record.book_id.id),
+                ("return_date", "=", False),
+                ("id", "!=", record.id),
+            ], limit=1)
+
+            if other_open:
+                raise ValidationError(
+                    f"This book is already rented and not returned "
+                    f"(current renter: {record.book_id.current_renter_id.name or 'unknown'})."
+                )
+
+    @api.constrains("rent_date", "return_date")
+    def _check_rent_dates_validity(self):
+        """Validate logical rules for rent and return dates."""
+        today = fields.Date.today()
+        for record in self:
+            # Rent date cannot be in the future
+            if record.rent_date > today:
+                raise ValidationError("Rent date cannot be in the future.")
+
+            # Return date cannot be earlier than rent date
+            if record.return_date and record.return_date < record.rent_date:
+                raise ValidationError("Return date cannot be earlier than rent date.")
+
+            # Return date cannot be in the future (if set)
+            if record.return_date and record.return_date > today:
+                raise ValidationError("Return date cannot be in the future.")

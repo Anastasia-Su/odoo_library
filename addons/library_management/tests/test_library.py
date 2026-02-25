@@ -1,0 +1,143 @@
+from datetime import timedelta
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import ValidationError
+from odoo import fields
+
+
+class TestLibraryRent(TransactionCase):
+    """
+    Test suite for library book and rent functionality.
+
+    Includes tests for:
+    - Unique book constraints (name + author)
+    - Published date validation
+    - Renting books
+    - Single open rent per book
+    - Rent and return date validations
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up test data for all test methods."""
+        
+        super().setUpClass()
+
+        # Create category "Test Users"
+        cls.test_category = cls.env["res.partner.category"].create({
+            "name": "Test Users"
+        })
+
+        # Create a test user and assign to category
+        cls.user = cls.env["res.partner"].create({
+            "name": "Jane Smith",
+            "category_id": [(6, 0, [cls.test_category.id])]
+        })
+
+        # Create a test book
+        cls.book = cls.env["library.book"].create({
+            "name": "Clean Architecture",
+            "author": "Robert Martin",
+            "published_date": fields.Date.today(),
+        })
+        
+        
+    def test_unique_book_name_author(self):
+        """
+        Ensure that a book with the same name and author cannot be duplicated.
+        """
+        
+        with self.assertRaises(ValidationError):
+            self.env["library.book"].create({
+                "name": "Clean Architecture",
+                "author": "Robert Martin",
+                "published_date": fields.Date.today(),
+            })
+            
+    def test_book_published_date_not_future(self):
+        """
+        Ensure that a book's published date cannot be set in the future.
+        """
+        
+        future_date = fields.Date.today() + timedelta(days=1)
+
+        with self.assertRaises(ValidationError):
+            self.env["library.book"].create({
+                "name": "Future Book",
+                "author": "Someone",
+                "published_date": future_date,
+            })
+            
+    def test_rent_book_success(self):
+        """
+        Test that renting a book updates its availability and sets the current renter.
+        """
+        
+        self.env["library.rent"].create({
+            "partner_id": self.user.id,
+            "book_id": self.book.id,
+        })
+
+        self.assertFalse(self.book.is_available, "Book should be marked as unavailable after rent.")
+        self.assertEqual(self.book.current_renter_id, self.user, "Current renter should be set to the renting user.")
+        
+        
+    def test_only_one_open_rent_per_book(self):
+        """
+        Ensure that a book cannot be rented by multiple users at the same time.
+        """
+        
+        self.env["library.rent"].create({
+            "partner_id": self.user.id,
+            "book_id": self.book.id,
+        })
+
+        with self.assertRaises(ValidationError):
+            self.env["library.rent"].create({
+                "partner_id": self.user.id,
+                "book_id": self.book.id,
+            })
+            
+    def test_rent_date_not_future(self):
+        """
+        Ensure that a rent's start date cannot be in the future.
+        """
+        future_date = fields.Date.today() + timedelta(days=2)
+
+        with self.assertRaises(ValidationError):
+            self.env["library.rent"].create({
+                "partner_id": self.user.id,
+                "book_id": self.book.id,
+                "rent_date": future_date,
+            })
+            
+    def test_return_date_before_rent_date(self):
+        """
+        Ensure that a rent's return date cannot be before the rent date.
+        """
+        
+        today = fields.Date.today()
+
+        with self.assertRaises(ValidationError):
+            self.env["library.rent"].create({
+                "partner_id": self.user.id,
+                "book_id": self.book.id,
+                "rent_date": today,
+                "return_date": today - timedelta(days=1),
+            })
+            
+    def test_return_book(self):
+        """
+        Test returning a book:
+        - Book becomes available
+        - Current renter is cleared
+        """
+        
+        rent = self.env["library.rent"].create({
+            "partner_id": self.user.id,
+            "book_id": self.book.id,
+        })
+
+        rent.action_return_book()
+
+        self.assertTrue(self.book.is_available, "Book should be available after return.")
+        self.assertFalse(self.book.current_renter_id, "Current renter should be cleared after return.")

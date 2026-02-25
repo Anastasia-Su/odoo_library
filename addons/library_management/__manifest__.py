@@ -13,12 +13,15 @@
     "depends": ["base", "contacts"],  # contacts for res.partner
     "data": [
         "security/ir.model.access.csv",
-        "demo/demo.xml",
+        "views/partner_tags.xml", 
+        "views/library_menu.xml",
         "views/rent_wizard_views.xml",
         "views/library_book_views.xml",
         "views/library_rent_views.xml",
         "views/library_partner_views.xml",
-        "views/library_menu.xml",
+        
+        "demo/demo.xml",
+       
     ],
     "demo": [
         "demo/demo.xml",

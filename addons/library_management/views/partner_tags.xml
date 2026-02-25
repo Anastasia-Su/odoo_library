@@ -1,0 +1,8 @@
+<odoo>
+  <data noupdate="1">
+    <record id="tag_test_users" model="res.partner.category">
+        <field name="name">Test Users</field>
+        <field name="color">8</field>
+    </record>
+  </data>
+</odoo>

@@ -38,7 +38,7 @@
         <field name="res_model">res.partner</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('category_id.name', '=', 'Test Users')]</field> <!-- тільки твої тестові -->
-        <field name="context" eval="{'default_category_id': [(6, 0, [ref('library_management.tag_test_users')])]}"/>
+        <field name="context" eval="{'default_category_id': [(6, 0, [ref('library_management.tag_test_users'), False])]}"/>
     </record>
 
     <menuitem id="menu_library_partners"
