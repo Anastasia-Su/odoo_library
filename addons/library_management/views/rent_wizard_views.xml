@@ -6,8 +6,11 @@
         <field name="arch" type="xml">
             <form string="Видати книгу">
                 <group>
-                    <field name="partner_id" options="{'no_create': True}"/>
-                    <field name="book_id" domain="[('is_available', '=', True)]" options="{'no_create': True}"/>
+                    <field name="partner_id"/>
+                    <field name="book_id" 
+                       readonly="1"
+                       nolabel="1"
+                       invisible="context.get('default_book_id')"/>
                 </group>
                 <footer>
                     <button string="Видати"
@@ -28,5 +31,6 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="view_id" ref="view_library_rent_wizard_form"/>
+        <field name="context">{'default_book_id': active_id}</field>
     </record>
 </odoo>

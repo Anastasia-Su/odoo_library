@@ -60,9 +60,15 @@ class LibraryRent(models.Model):
         string="User",
         required=True,
         domain="[('category_id.name', '=', 'Test Users')]",
-        options={'no_create': True, 'no_open': True}
+        options={"no_create": True, "no_open": True},
     )
-    book_id = fields.Many2one("library.book", string="Book", required=True, domain="[('is_available', '=', True)]")
+    book_id = fields.Many2one(
+        "library.book",
+        string="Book",
+        required=True,
+        domain="[('is_available', '=', True)]",
+        options={"no_create": True, "no_open": True},
+    )
     rent_date = fields.Date(string="Rent Date", default=fields.Date.today)
     return_date = fields.Date(string="Return Date")
 
