@@ -141,3 +141,20 @@ class TestLibraryRent(TransactionCase):
 
         self.assertTrue(self.book.is_available, "Book should be available after return.")
         self.assertFalse(self.book.current_renter_id, "Current renter should be cleared after return.")
+
+    def test_return_book_twice_raises(self):
+        """
+        Test that trying to return the same book twice raises ValidationError.
+        """
+        
+        rent = self.env["library.rent"].create({
+            "partner_id": self.user.id,
+            "book_id": self.book.id,
+        })
+
+        # First return works fine
+        rent.action_return_book()
+
+        # Second return should raise ValidationError
+        with self.assertRaises(ValidationError):
+            rent.action_return_book()

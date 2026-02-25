@@ -102,18 +102,21 @@ class LibraryRent(models.Model):
     )
     rent_date = fields.Date(string="Rent Date", default=fields.Date.today)
     return_date = fields.Date(string="Return Date")
+    
 
     def action_return_book(self):
+        if self.return_date:
+            raise ValidationError("This book was already returned.")
+    
         self.write({"return_date": fields.Date.today()})
-        # is_available recomputes automatically on book
+        
         return {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": "Успіх",
-                "message": "Книгу повернуто!",
-                "type": "success",
-            },
+            "type": "ir.actions.act_window",
+            "res_model": self._name,
+            "view_mode": "form",
+            "res_id": self.id,
+            "target": "current",
+            "flags": {"reload": True},
         }
 
     # ==================== CONSTRAINTS - LIBRARY RENT ====================
@@ -153,3 +156,4 @@ class LibraryRent(models.Model):
             # Return date cannot be in the future (if set)
             if record.return_date and record.return_date > today:
                 raise ValidationError("Return date cannot be in the future.")
+            
