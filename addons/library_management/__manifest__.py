@@ -14,7 +14,6 @@
     "data": [
         "security/ir.model.access.csv",
         "demo/demo.xml",
-        #"views/partner_tags.xml",
         "views/library_root_menu.xml",
         "views/rent_wizard_views.xml",
         "views/library_book_views.xml",
