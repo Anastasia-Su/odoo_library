@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- List view -->
+    <record id="view_library_rent_list"
+            model="ir.ui.view">
+        <field name="name">library.rent.list</field>
+        <field name="model">library.rent</field>
+        <field name="arch"
+               type="xml">
+            <list string="Rents">
+                <field name="book_id" />
+                <field name="partner_id" />
+                <field name="rent_date" />
+                <field name="return_date" />
+            </list>
+        </field>
+    </record>
+    <!-- Form view -->
+    <record id="view_library_rent_form"
+            model="ir.ui.view">
+        <field name="name">library.rent.form</field>
+        <field name="model">library.rent</field>
+        <field name="arch"
+               type="xml">
+            <form string="Book Renta">
+                <header>
+                    <!-- "Return Book" button 
+                         - Calls the action_return_book method on the model
+                         - Highlighted as primary button
+                         - Only visible when return_date is empty (book not yet returned) -->
+                    <button name="action_return_book"
+                            string="Return Book"
+                            type="object"
+                            class="oe_highlight btn-primary"
+                            invisible="return_date" />
+                </header>
+                <sheet>
+                    <group>
+                        <!-- Book selection 
+                             - Dropdown from library.book
+                             - Prevents quick-create and quick-open from this form -->
+                        <field name="book_id"
+                               options="{'no_create': True, 'no_open': True}" />
+                        <!-- Renter selection (res.partner)
+                             - Same restrictions as book field -->
+                        <field name="partner_id"
+                               options="{'no_create': True, 'no_open': True}" />
+                        <field name="rent_date" />
+                        <field name="return_date" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Window Action (opens the list + form views)
+        This is what appears in the menu -->
+    <record id="action_library_rent"
+            model="ir.actions.act_window">
+        <field name="name">Rents</field>
+        <field name="res_model">library.rent</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <!-- Menu item in the main menu -->
+    <menuitem id="menu_library_rents"
+              name="Rents"
+              parent="menu_library_root"
+              action="action_library_rent" />
+</odoo>
