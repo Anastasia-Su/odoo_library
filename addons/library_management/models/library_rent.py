@@ -11,7 +11,7 @@ class LibraryRent(models.Model):
 
     _name = "library.rent"
     _description = "Library Rent"
-    _order = "rent_date desc"
+    _order = "rent_date desc, return_date desc"
 
     partner_id = fields.Many2one(
         "res.partner",

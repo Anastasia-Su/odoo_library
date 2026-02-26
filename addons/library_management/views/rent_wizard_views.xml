@@ -12,12 +12,8 @@
                 <group>
                     <!-- Renter (customer / partner) selection
                          - User must choose who is borrowing the book -->
-                    <field name="partner_id" />
-                    <!-- Book field – pre-filled and hidden when wizard is opened from a book form -->
-                    <field name="book_id"
-                           readonly="1"
-                           nolabel="1"
-                           invisible="context.get('default_book_id')" />
+                    <field name="partner_id"
+                           options="{'no_create': True, 'no_open': True}" />
                 </group>
                 <footer>
                     <!-- "Rent Book" confirmation button
@@ -46,8 +42,5 @@
         <!-- Links to the form view defined above -->
         <field name="view_id"
                ref="view_library_rent_wizard_form" />
-        <!-- Pre-fills the book when opened from a book record
-            active_id = ID of the currently active/selected book -->
-        <field name="context">{'default_book_id': active_id}</field>
     </record>
 </odoo>

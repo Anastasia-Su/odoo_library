@@ -1,4 +1,5 @@
 from odoo import models, fields
+from odoo.exceptions import ValidationError
 
 
 class LibraryRentWizard(models.TransientModel):
@@ -19,14 +20,6 @@ class LibraryRentWizard(models.TransientModel):
         # Prevent quick-create and opening the partner form from this field
         options={"no_create": True, "no_open": True},
     )
-    book_id = fields.Many2one(
-        "library.book",
-        string="Book",
-        required=True,
-        domain="[('is_available', '=', True)]",
-        # Prevent quick-create and opening the book form from this field
-        options={"no_create": True, "no_open": True},
-    )
 
     def action_rent_book(self) -> dict[str, str]:
         """
@@ -43,22 +36,39 @@ class LibraryRentWizard(models.TransientModel):
 
         self.ensure_one()  # Safety: make sure we are working with a single wizard record
 
-        # Create the rent record
-        # rent_date will use its default value (fields.Date.today)
-        self.env["library.rent"].create(
+        # Retrieve the book ID from the context
+        book_id = self.env.context.get("active_id")
+        active_model = self.env.context.get("active_model")
+
+        if not book_id or active_model != "library.book":
+            raise ValidationError(
+                "This wizard can only be opened from a book form.\n"
+                "Please click the 'Rent Book' button directly on a book record."
+            )
+
+        book = self.env["library.book"].browse(book_id)
+        if not book.exists():
+            raise ValidationError("Book not found.")
+        if not book.is_available:
+            raise ValidationError(
+                f"The book '{book.name}' is already rented to another user."
+            )
+
+        # Create the rental record
+        rent = self.env["library.rent"].create(
             {
                 "partner_id": self.partner_id.id,
-                "book_id": self.book_id.id,
+                "book_id": book.id,
             }
         )
 
         # Show nice toast notification
         self.env["bus.bus"]._sendone(
-            self.env.user.partner_id,  # Target: current logged-in user
+            self.env.user.partner_id,
             "simple_notification",
             {
                 "title": "Success",
-                "message": f'Book "{self.book_id.name}" has been rented to {self.partner_id.name}.',
+                "message": f'Book "{book.name}" has been rented to {self.partner_id.name}.',
                 "type": "success",
             },
         )
