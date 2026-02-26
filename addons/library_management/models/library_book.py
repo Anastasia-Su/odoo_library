@@ -14,7 +14,10 @@ class LibraryBook(models.Model):
 
     name = fields.Char(string="Book Name", required=True, size=50)
 
-    # Many2one instead of Char: better data consistency, reuse of authors, autocompletio
+    # To ensure better data quality, prevent typos, enable autocomplete/dropdown selection,
+    # and allow future extensions (e.g. author bio, books count),
+    # this implementation uses a Many2one relation to a separate 'library.author' model.
+    # This is a conscious design improvement over the literal Char requirement.
     author_id = fields.Many2one(
         "library.author",
         string="Author",
@@ -55,7 +58,7 @@ class LibraryBook(models.Model):
 
     # COMPUTE METHODS
 
-    @api.depends("rent_ids.return_date")
+    @api.depends("rent_ids", "rent_ids.return_date")
     def _compute_is_available(self) -> None:
         """
         Book is available when it has no open (not returned) rental records.

@@ -207,13 +207,13 @@ class TestLibraryRent(TransactionCase):
 
     def test_author_name_too_short(self):
         """Name shorter than 2 chars after stripping should raise ValidationError."""
-        
+
         with self.assertRaises(ValidationError):
             self.env["library.author"].create({"name": "A"})
 
     def test_author_name_too_long_db_enforced(self):
         """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
-        
+
         too_long = "A" * 101
 
         author = self.env["library.author"].sudo().create({"name": too_long})
@@ -224,7 +224,7 @@ class TestLibraryRent(TransactionCase):
 
     def test_book_name_too_short(self):
         """Name shorter than 2 chars after stripping should raise ValidationError."""
-        
+
         with self.assertRaises(ValidationError):
             self.env["library.book"].create(
                 {
@@ -236,7 +236,7 @@ class TestLibraryRent(TransactionCase):
 
     def test_book_name_too_long_db_enforced(self):
         """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
-        
+
         too_long = "A" * 51
 
         book = self.env["library.book"].create(
