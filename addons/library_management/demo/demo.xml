@@ -1,7 +1,7 @@
 <odoo>
     <!-- Demo data (noupdate="1": records are created only on first install,
       not overwritten on module upgrade) -->
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Create tag first – must exist before partners reference it -->
         <record id="tag_test_users"
                 model="res.partner.category">
