@@ -20,7 +20,6 @@
         "views/library_rent_views.xml",
         "views/library_partner_views.xml",
         "views/library_author_views.xml",
-        
     ],
     "demo": [
         "demo/demo.xml",

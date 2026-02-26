@@ -24,7 +24,7 @@ class LibraryController(http.Controller):
 
         # Check Accept header to decide response format
         accept = request.httprequest.headers.get("Accept", "").lower()
-        
+
         # Return proper JSON API response
         if "application/json" in accept or not accept or "json" in accept:
             return request.make_json_response(data)

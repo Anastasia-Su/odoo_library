@@ -204,14 +204,16 @@ class TestLibraryRent(TransactionCase):
 
         with self.assertRaises(ValidationError):
             self.env["library.author"].create({"name": "  jane austen  "})
-            
+
     def test_author_name_too_short(self):
         """Name shorter than 2 chars after stripping should raise ValidationError."""
+        
         with self.assertRaises(ValidationError):
             self.env["library.author"].create({"name": "A"})
-            
+
     def test_author_name_too_long_db_enforced(self):
         """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
+        
         too_long = "A" * 101
 
         author = self.env["library.author"].sudo().create({"name": too_long})
@@ -219,9 +221,10 @@ class TestLibraryRent(TransactionCase):
         # After creation, name should be truncated
         self.assertEqual(len(author.name), 100)
         self.assertEqual(author.name, "A" * 100)
-        
+
     def test_book_name_too_short(self):
         """Name shorter than 2 chars after stripping should raise ValidationError."""
+        
         with self.assertRaises(ValidationError):
             self.env["library.book"].create(
                 {
@@ -230,18 +233,19 @@ class TestLibraryRent(TransactionCase):
                     "published_date": fields.Date.today(),
                 }
             )
-            
+
     def test_book_name_too_long_db_enforced(self):
         """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
+        
         too_long = "A" * 51
 
         book = self.env["library.book"].create(
-                {
-                    "name": too_long,
-                    "author_id": self.author_robert.id,
-                    "published_date": fields.Date.today(),
-                }
-            )
+            {
+                "name": too_long,
+                "author_id": self.author_robert.id,
+                "published_date": fields.Date.today(),
+            }
+        )
 
         # After creation, name should be truncated
         self.assertEqual(len(book.name), 50)

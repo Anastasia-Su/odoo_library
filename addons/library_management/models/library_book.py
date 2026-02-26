@@ -118,7 +118,7 @@ class LibraryBook(models.Model):
     @api.constrains("published_date")
     def _check_published_date_not_future(self) -> None:
         """Published date cannot be in the future."""
-        
+
         today = fields.Date.today()
         for record in self:
             if record.published_date and record.published_date > today:
@@ -130,7 +130,7 @@ class LibraryBook(models.Model):
         Validate that the book name is between 2 and 50 characters long
         after removing leading/trailing spaces.
         """
-        
+
         for record in self:
             if not record.name:
                 continue
@@ -144,4 +144,3 @@ class LibraryBook(models.Model):
                     "(after removing extra spaces)."
                 )
             # No need to check upper limit here — size=50 is enforced by DB
-
