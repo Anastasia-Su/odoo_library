@@ -6,9 +6,9 @@ services:
     ports:
       - "5433:5432" 
     environment:
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
@@ -27,10 +27,10 @@ services:
     ports:
       - "8069:8069"
     environment:
-      HOST: db
-      USER: odoo
-      PASSWORD: secret
-      DB_NAME: FALSE
+      HOST: ${ODOO_DB_HOST}
+      USER: ${ODOO_DB_USER}
+      PASSWORD: ${ODOO_DB_PASSWORD}
+      DB_NAME: "FALSE"
     volumes:
       - odoo-data:/var/lib/odoo
       - ./addons:/mnt/extra-addons
