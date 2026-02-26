@@ -219,3 +219,30 @@ class TestLibraryRent(TransactionCase):
         # After creation, name should be truncated
         self.assertEqual(len(author.name), 100)
         self.assertEqual(author.name, "A" * 100)
+        
+    def test_book_name_too_short(self):
+        """Name shorter than 2 chars after stripping should raise ValidationError."""
+        with self.assertRaises(ValidationError):
+            self.env["library.book"].create(
+                {
+                    "name": "C",
+                    "author_id": self.author_robert.id,
+                    "published_date": fields.Date.today(),
+                }
+            )
+            
+    def test_book_name_too_long_db_enforced(self):
+        """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
+        too_long = "A" * 51
+
+        book = self.env["library.book"].create(
+                {
+                    "name": too_long,
+                    "author_id": self.author_robert.id,
+                    "published_date": fields.Date.today(),
+                }
+            )
+
+        # After creation, name should be truncated
+        self.assertEqual(len(book.name), 50)
+        self.assertEqual(book.name, "A" * 50)

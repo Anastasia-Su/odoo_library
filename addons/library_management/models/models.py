@@ -13,7 +13,7 @@ class LibraryBook(models.Model):
     _description = "Library Book"
     _order = "name"  # Default sorting in lists
 
-    name = fields.Char(string="Book Name", required=True)
+    name = fields.Char(string="Book Name", required=True, size=50)
 
     # Many2one instead of Char: better data consistency, reuse of authors, autocompletio
     author_id = fields.Many2one(
@@ -120,6 +120,26 @@ class LibraryBook(models.Model):
         for record in self:
             if record.published_date and record.published_date > today:
                 raise ValidationError("Published date cannot be in the future.")
+
+    @api.constrains("name")
+    def _check_name_length(self) -> None:
+        """
+        Validate that the book name is between 2 and 50 characters long
+        after removing leading/trailing spaces.
+        """
+        for record in self:
+            if not record.name:
+                continue
+
+            cleaned = record.name.strip()
+            length = len(cleaned)
+
+            if length < 2:
+                raise ValidationError(
+                    "Book name must be at least 2 characters long "
+                    "(after removing extra spaces)."
+                )
+            # No need to check upper limit here — size=50 is enforced by DB
 
 
 class LibraryRent(models.Model):
