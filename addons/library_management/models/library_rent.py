@@ -31,6 +31,42 @@ class LibraryRent(models.Model):
     rent_date = fields.Date(string="Rent Date", default=fields.Date.today)
     return_date = fields.Date(string="Return Date")
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Override create to force recompute and flush is_available on the book(s)
+        after a new rent is created.
+        This ensures stored computed field updates in DB immediately,
+        even when rent is created manually (not via wizard).
+        """
+        rents = super().create(vals_list)
+
+        # Get all affected books
+        books = rents.mapped("book_id")
+
+        # Recompute and flush to DB
+        if books:
+            books._compute_is_available()
+            books.flush_recordset(["is_available"])
+
+        return rents
+
+    def write(self, vals):
+        """
+        Override write to force recompute and flush when return_date changes
+        (book becomes available again).
+        """
+        res = super().write(vals)
+
+        # Only if return_date was set (book returned)
+        if "return_date" in vals:
+            books = self.mapped("book_id")
+            if books:
+                books._compute_is_available()
+                books.flush_recordset(["is_available"])
+
+        return res
+
     def action_return_book(self) -> dict[str, Any]:
         """
         Marks the rental as returned (sets return_date = today).

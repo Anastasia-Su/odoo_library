@@ -58,7 +58,7 @@ class LibraryBook(models.Model):
 
     # COMPUTE METHODS
 
-    @api.depends("rent_ids.return_date")
+    @api.depends("rent_ids", "rent_ids.return_date")
     def _compute_is_available(self) -> None:
         """
         Book is available when it has no open (not returned) rental records.
