@@ -1,45 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- 
-        Form view for the "Rent Book" transient wizard (library.rent.wizard)
-        This wizard is used to quickly create a new rental record for a selected book.
-    -->
-    <record id="view_library_rent_wizard_form" model="ir.ui.view">
+    <!-- Form view for the "Rent Book" transient wizard (library.rent.wizard)
+        This wizard is used to quickly create a new rental record for a selected book. -->
+    <record id="view_library_rent_wizard_form"
+            model="ir.ui.view">
         <field name="name">library.rent.wizard.form</field>
         <field name="model">library.rent.wizard</field>
-        <field name="arch" type="xml">
-
+        <field name="arch"
+               type="xml">
             <form string="Rent Book">
                 <group>
                     <!-- Renter (customer / partner) selection
                          - User must choose who is borrowing the book -->
-                    <field name="partner_id"/>
+                    <field name="partner_id" />
                     <!-- Book field – pre-filled and hidden when wizard is opened from a book form -->
-                    <field name="book_id" readonly="1" nolabel="1" invisible="context.get('default_book_id')"/>
+                    <field name="book_id"
+                           readonly="1"
+                           nolabel="1"
+                           invisible="context.get('default_book_id')" />
                 </group>
                 <footer>
                     <!-- "Rent Book" confirmation button
                          - Calls method action_rent_book() on the wizard model
                          - Creates the actual library.rent record -->
-                    <button string="Rent" type="object" name="action_rent_book" class="btn-primary oe_highlight"/>
+                    <button string="Rent"
+                            type="object"
+                            name="action_rent_book"
+                            class="btn-primary oe_highlight" />
                     <!-- Cancel button – closes the wizard without saving -->
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
-
-    <!-- 
-        Window Action that opens the Rent Book wizard as a popup dialog
-    -->
-    <record id="action_rent_wizard" model="ir.actions.act_window">
+    <!-- Window Action that opens the Rent Book wizard as a popup dialog -->
+    <record id="action_rent_wizard"
+            model="ir.actions.act_window">
         <field name="name">Rent Book</field>
         <field name="res_model">library.rent.wizard</field>
         <field name="view_mode">form</field>
         <!-- Opens as modal popup (new window) -->
         <field name="target">new</field>
         <!-- Links to the form view defined above -->
-        <field name="view_id" ref="view_library_rent_wizard_form"/>
+        <field name="view_id"
+               ref="view_library_rent_wizard_form" />
         <!-- Pre-fills the book when opened from a book record
             active_id = ID of the currently active/selected book -->
         <field name="context">{'default_book_id': active_id}</field>

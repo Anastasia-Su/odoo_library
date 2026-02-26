@@ -1,67 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <!-- List view -->
-    <record id="view_library_book_list" model="ir.ui.view">
+    <record id="view_library_book_list"
+            model="ir.ui.view">
         <field name="name">library.book.list</field>
         <field name="model">library.book</field>
-        <field name="arch" type="xml">
-            <list>
-                <field name="name"/>
-                <field name="author_id"/>
-                <field name="published_date"/>
-                <field name="is_available"/>
+        <field name="arch"
+               type="xml">
+            <list string="Books">
+                <field name="name" />
+                <field name="author_id" />
+                <field name="published_date" />
+                <field name="is_available" />
             </list>
         </field>
     </record>
-
     <!-- Form view -->
-    <record id="view_library_book_form" model="ir.ui.view">
+    <record id="view_library_book_form"
+            model="ir.ui.view">
         <field name="name">library.book.form</field>
         <field name="model">library.book</field>
-        <field name="arch" type="xml">
+        <field name="arch"
+               type="xml">
             <form string="Book">
                 <header>
-                    <!-- 
-                        Button to open the Rent Wizard
+                    <!-- Button to open the Rent Wizard
                         - Uses external ID reference %(action_rent_wizard)d
-                        - Only visible when book is available (is_available == True)
-                    -->
-                    <button name="%(action_rent_wizard)d" string="Rent Book" type="action" class="oe_highlight btn-primary" invisible="not is_available"/>
+                        - Only visible when book is available (is_available == True) -->
+                    <button name="%(action_rent_wizard)d"
+                            string="Rent Book"
+                            type="action"
+                            class="oe_highlight btn-primary"
+                            invisible="not is_available" />
                 </header>
-
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <!-- 
-                            Author selection options={'no_create': True, 'no_open': True} → 
+                        <field name="name" />
+                        <!-- Author selection options={'no_create': True, 'no_open': True} → 
                             prevents creating new author or opening author form from dropdown
-                            Improves data consistency (forces selection from existing authors)
-                        -->
-                        <field name="author_id" options="{'no_create': True, 'no_open': True}"/>
-                        <field name="published_date"/>
-                        <!-- 
-                            Computed availability – readonly because it's calculated
-                        -->
-                        <field name="is_available" readonly="1"/>
-                        <field name="current_renter_id" readonly="1" placeholder="No active renter"/>
+                            Improves data consistency (forces selection from existing authors) -->
+                        <field name="author_id"
+                               options="{'no_create': True, 'no_open': True}" />
+                        <field name="published_date" />
+                        <!-- Computed availability – readonly because it's calculated -->
+                        <field name="is_available"
+                               readonly="1" />
+                        <field name="current_renter_id"
+                               readonly="1"
+                               placeholder="No active renter" />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
-
-    <!-- 
-        Window action (menu entry backend logic)
-        Defines what opens when clicking the menu item
-    -->
-    <record id="action_library_book" model="ir.actions.act_window">
+    <!-- Window action (menu entry backend logic)
+        Defines what opens when clicking the menu item -->
+    <record id="action_library_book"
+            model="ir.actions.act_window">
         <field name="name">Books</field>
         <field name="res_model">library.book</field>
         <field name="view_mode">list,form</field>
     </record>
-
-    <!-- 
-        Menu item in the main menu
-    -->
-    <menuitem id="menu_library_books" name="Books" parent="menu_library_root" action="action_library_book"/>
+    <!-- Menu item in the main menu -->
+    <menuitem id="menu_library_books"
+              name="Books"
+              parent="menu_library_root"
+              action="action_library_book" />
 </odoo>

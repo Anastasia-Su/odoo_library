@@ -1,91 +1,103 @@
 <odoo>
-    <!-- 
-      Demo data (noupdate="1": records are created only on first install,
-      not overwritten on module upgrade)
-    -->
+    <!-- Demo data (noupdate="1": records are created only on first install,
+      not overwritten on module upgrade) -->
     <data noupdate="0">
-
         <!-- Create tag first – must exist before partners reference it -->
-        <record id="tag_test_users" model="res.partner.category">
+        <record id="tag_test_users"
+                model="res.partner.category">
             <field name="name">Test Users</field>
             <field name="color">8</field>
         </record>
-
         <!-- Demo library users (res.partner with 'Test Users' tag) -->
-        <record id="demo_partner_jane" model="res.partner">
+        <record id="demo_partner_jane"
+                model="res.partner">
             <field name="name">Jane Smith</field>
             <field name="email">jane.smith@test.example.com</field>
             <field name="phone">(123) 456-7890</field>
             <field name="street">Test Street 1</field>
             <field name="city">Bila Tserkva</field>
-            <field name="country_id" ref="base.ua"/>
+            <field name="country_id"
+                   ref="base.ua" />
             <!-- Ukraine -->
             <!-- Same category tag for filtering in library views -->
-            <field name="category_id" eval="[(6, 0, [ref('library_management.tag_test_users')])]"/>
+            <field name="category_id"
+                   eval="[(6, 0, [ref('library_management.tag_test_users')])]" />
         </record>
-        <record id="demo_partner_john" model="res.partner">
+        <record id="demo_partner_john"
+                model="res.partner">
             <field name="name">John Doe</field>
             <field name="email">john.doe@test.example.com</field>
             <field name="phone">(987) 654-3210</field>
             <field name="city">Kyiv</field>
-            <field name="country_id" ref="base.ua"/>
-            <field name="category_id" eval="[(6, 0, [ref('library_management.tag_test_users')])]"/>
+            <field name="country_id"
+                   ref="base.ua" />
+            <field name="category_id"
+                   eval="[(6, 0, [ref('library_management.tag_test_users')])]" />
         </record>
-
         <!-- Demo authors (library.author) -->
-        <record id="demo_author_fitzgerald" model="library.author">
+        <record id="demo_author_fitzgerald"
+                model="library.author">
             <field name="name">F. Scott Fitzgerald</field>
         </record>
-
-        <record id="demo_author_orwell" model="library.author">
+        <record id="demo_author_orwell"
+                model="library.author">
             <field name="name">George Orwell</field>
         </record>
-
-        <record id="demo_author_tolkien" model="library.author">
+        <record id="demo_author_tolkien"
+                model="library.author">
             <field name="name">J.R.R. Tolkien</field>
         </record>
-
         <!-- Demo books (library.book) -->
-        <record id="demo_book_gatsby" model="library.book">
+        <record id="demo_book_gatsby"
+                model="library.book">
             <field name="name">The Great Gatsby</field>
-            <field name="author_id" ref="library_management.demo_author_fitzgerald"/>
+            <field name="author_id"
+                   ref="library_management.demo_author_fitzgerald" />
             <field name="published_date">1925-04-10</field>
-            <field name="is_available" eval="True"/>
+            <field name="is_available"
+                   eval="True" />
         </record>
-
-        <record id="demo_book_1984" model="library.book">
+        <record id="demo_book_1984"
+                model="library.book">
             <field name="name">1984</field>
-            <field name="author_id" ref="library_management.demo_author_orwell"/>
+            <field name="author_id"
+                   ref="library_management.demo_author_orwell" />
             <field name="published_date">1949-06-08</field>
-            <field name="is_available" eval="False"/>
+            <field name="is_available"
+                   eval="False" />
             <!-- Already rented -->
         </record>
-
-        <record id="demo_book_hobbit" model="library.book">
+        <record id="demo_book_hobbit"
+                model="library.book">
             <field name="name">The Hobbit</field>
-            <field name="author_id" ref="library_management.demo_author_tolkien"/>
+            <field name="author_id"
+                   ref="library_management.demo_author_tolkien" />
             <field name="published_date">1937-09-21</field>
-            <field name="is_available" eval="True"/>
+            <field name="is_available"
+                   eval="True" />
         </record>
-
         <!-- Demo rental records (library.rent)
         Shows active and past rentals -->
-        <record id="demo_rent_1" model="library.rent">
+        <record id="demo_rent_1"
+                model="library.rent">
             <!-- Assign the rented book to John -->
-            <field name="partner_id" ref="demo_partner_john"/>
-            <field name="book_id" ref="demo_book_1984"/>
+            <field name="partner_id"
+                   ref="demo_partner_john" />
+            <field name="book_id"
+                   ref="demo_book_1984" />
             <field name="rent_date">2026-02-24</field>
             <!-- return_date left empty to simulate book still rented -->
         </record>
-
-        <record id="demo_rent_2" model="library.rent">
+        <record id="demo_rent_2"
+                model="library.rent">
             <!-- Another rental, just to show multiple rents -->
-            <field name="partner_id" ref="demo_partner_jane"/>
-            <field name="book_id" ref="demo_book_gatsby"/>
+            <field name="partner_id"
+                   ref="demo_partner_jane" />
+            <field name="book_id"
+                   ref="demo_book_gatsby" />
             <field name="rent_date">2026-02-20</field>
             <field name="return_date">2026-02-22</field>
             <!-- Already returned -->
         </record>
-
     </data>
 </odoo>

@@ -1,3 +1,4 @@
 <odoo>
-    <menuitem id="menu_library_root" name="Library"/>
+    <menuitem id="menu_library_root"
+              name="Library" />
 </odoo>

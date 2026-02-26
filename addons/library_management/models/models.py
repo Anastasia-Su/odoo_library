@@ -69,9 +69,12 @@ class LibraryBook(models.Model):
     @api.depends("rent_ids.partner_id", "rent_ids.return_date")
     def _compute_current_renter(self) -> None:
         """
-        Finds the partner who currently rents the book.
-        If multiple open rents exist (shouldn't happen due to constraint),
-        takes the most recent one by rent_date.
+        Computes the current renter of the book.
+        - Looks only at open (not returned) rental records (return_date is False/None)
+        - If no open rents → no renter (False)
+        - If one open rent → that partner is the current renter
+        - If multiple open rents exist (should never happen due to constraint) →
+        takes the most recent one based on rent_date
         """
 
         for book in self:
@@ -116,6 +119,7 @@ class LibraryBook(models.Model):
     @api.constrains("published_date")
     def _check_published_date_not_future(self) -> None:
         """Published date cannot be in the future."""
+        
         today = fields.Date.today()
         for record in self:
             if record.published_date and record.published_date > today:
@@ -127,6 +131,7 @@ class LibraryBook(models.Model):
         Validate that the book name is between 2 and 50 characters long
         after removing leading/trailing spaces.
         """
+        
         for record in self:
             if not record.name:
                 continue
