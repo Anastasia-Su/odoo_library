@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class LibraryRentWizard(models.TransientModel):
@@ -58,7 +58,7 @@ class LibraryRentWizard(models.TransientModel):
             "simple_notification",
             {
                 "title": "Success",
-                "message": f'Book "{self.book_id.name}" has been rented to {self.partner_id.name}!',
+                "message": f'Book "{self.book_id.name}" has been rented to {self.partner_id.name}.',
                 "type": "success",
             },
         )

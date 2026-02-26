@@ -227,27 +227,60 @@ class LibraryAuthor(models.Model):
     _description = "Library Author"
     _order = "name"
 
-    name = fields.Char(string="Author Name", required=True)
-
-    name_normalized = fields.Char(
-        compute="_compute_name_normalized",
-        store=True,
-        index=True,
+    name = fields.Char(
+        string="Author Name",
+        required=True,
+        size=100,
     )
 
-    _sql_constraints = [
-        (
-            "name_normalized_unique",
-            "unique(name_normalized)",
-            "Author name must be unique (case and space insensitive).",
-        ),
-    ]
+    @api.constrains("name")
+    def _check_unique_name_normalized(self) -> None:
+        """
+        Ensure author names are unique when compared case-insensitively
+        and ignoring leading/trailing spaces.
 
-    @api.depends("name")
-    def _compute_name_normalized(self) -> None:
+        This constraint searches using case-insensitive match on the original name
+        field to avoid timing issues with the stored computed field.
+        """
+
         for record in self:
-            if record.name:
-                # Strip spaces + lowercase
-                record.name_normalized = record.name.strip().lower()
-            else:
-                record.name_normalized = False
+            if not record.name:
+                continue
+            normalized = record.name.strip().lower()
+            if not normalized:
+                continue
+
+            # Search for duplicates using case-insensitive exact match
+            duplicate = self.with_context(active_test=False).search(
+                [
+                    ("name", "=ilike", normalized),
+                    ("id", "!=", record.id),
+                ],
+                limit=1,
+            )
+
+            if duplicate:
+                raise ValidationError(
+                    f"Author '{record.name}' already exists "
+                    "(names are compared case-insensitive, ignoring extra spaces)."
+                )
+
+    @api.constrains("name")
+    def _check_name_length(self) -> None:
+        """
+        Validate that the author name is between 2 and 100 characters long
+        after removing leading/trailing spaces.
+        """
+        for record in self:
+            if not record.name:
+                continue
+
+            cleaned = record.name.strip()
+            length = len(cleaned)
+
+            if length < 2:
+                raise ValidationError(
+                    "Author name must be at least 2 characters long "
+                    "(after removing extra spaces)."
+                )
+            # No need to check upper limit here — size=100 is enforced by DB

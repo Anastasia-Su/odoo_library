@@ -1,5 +1,4 @@
 from datetime import timedelta
-from psycopg2.errors import UniqueViolation
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
 from odoo import fields
@@ -194,7 +193,7 @@ class TestLibraryRent(TransactionCase):
         """Check that creating two authors with the same name raises an error."""
 
         self.env["library.author"].create({"name": "Jane Austen"})
-        with self.assertRaises(UniqueViolation):
+        with self.assertRaises(ValidationError):
             self.env["library.author"].create({"name": "Jane Austen"})
 
     def test_strip_name_uniqueness(self):
@@ -203,5 +202,20 @@ class TestLibraryRent(TransactionCase):
 
         self.env["library.author"].create({"name": "Jane Austen"})
 
-        with self.assertRaises(UniqueViolation):
+        with self.assertRaises(ValidationError):
             self.env["library.author"].create({"name": "  jane austen  "})
+            
+    def test_author_name_too_short(self):
+        """Name shorter than 2 chars after stripping should raise ValidationError."""
+        with self.assertRaises(ValidationError):
+            self.env["library.author"].create({"name": "A"})
+            
+    def test_author_name_too_long_db_enforced(self):
+        """Check that name >100 chars is truncated by ORM/DB, no exception raised."""
+        too_long = "A" * 101
+
+        author = self.env["library.author"].sudo().create({"name": too_long})
+
+        # After creation, name should be truncated
+        self.assertEqual(len(author.name), 100)
+        self.assertEqual(author.name, "A" * 100)
