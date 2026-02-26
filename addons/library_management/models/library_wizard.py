@@ -55,7 +55,7 @@ class LibraryRentWizard(models.TransientModel):
             )
 
         # Create the rental record
-        rent = self.env["library.rent"].create(
+        self.env["library.rent"].create(
             {
                 "partner_id": self.partner_id.id,
                 "book_id": book.id,
